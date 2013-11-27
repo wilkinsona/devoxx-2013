@@ -16,9 +16,6 @@
 
 package com.nebhale.devoxx2013.web;
 
-import com.nebhale.devoxx2013.domain.Door;
-import com.nebhale.devoxx2013.service.GameService;
-import com.nebhale.devoxx2013.service.IllegalTransitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -32,44 +29,69 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/games/{game}/doors")
+import com.nebhale.devoxx2013.domain.Door;
+import com.nebhale.devoxx2013.domain.DoorRepository;
+import com.nebhale.devoxx2013.service.GameService;
+import com.nebhale.devoxx2013.service.IllegalTransitionException;
+
+@RequestMapping("/games/{gameId}/doors")
 @RestController
 final class DoorController {
 
-    private final GameService gameService;
+	private final DoorRepository doorRepository;
 
-    private final DoorResourceAssembler resourceAssembler;
+	private final GameService gameService;
 
-    @Autowired
-    DoorController(GameService gameService, DoorResourceAssembler resourceAssembler) {
-        this.gameService = gameService;
-        this.resourceAssembler = resourceAssembler;
-    }
+	private final DoorResourceAssembler resourceAssembler;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{door}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @Transactional(readOnly = true)
-    Resource<Door> read(@PathVariable Door door) {
-        Assert.notNull(door);
-        return this.resourceAssembler.toResource(door);
-    }
+	@Autowired
+	DoorController(DoorRepository doorRepository, GameService gameService, DoorResourceAssembler resourceAssembler) {
+		this.doorRepository = doorRepository;
+		this.gameService = gameService;
+		this.resourceAssembler = resourceAssembler;
+	}
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/{door}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @Transactional
-    void update(@PathVariable Door door, @RequestBody Door transition) throws IllegalTransitionException {
-        Assert.notNull(door);
-        Assert.notNull(transition);
+	/**
+	 * @param doorId the id of the door
+	 * 
+	 * @return The door
+	 * 
+	 * @throws IllegalArgumentException if the door does not exist
+	 */
+	@RequestMapping(method = RequestMethod.GET, value = "/{doorId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.OK)
+	@Transactional(readOnly = true)
+	Resource<Door> read(@PathVariable Integer doorId) {
+		Door door = this.doorRepository.findOne(doorId);
+		Assert.notNull(door);
+		return this.resourceAssembler.toResource(door);
+	}
 
-        Door.DoorStatus targetStatus = transition.getStatus();
-        if (Door.DoorStatus.CLOSED == targetStatus) {
-            throw new IllegalTransitionException(door.getGame().getId(), door.getId(), targetStatus);
-        } else if (Door.DoorStatus.OPENED == targetStatus) {
-            this.gameService.open(door);
-        } else if (Door.DoorStatus.SELECTED == targetStatus) {
-            this.gameService.select(door);
-        } else {
-            throw new IllegalStateException();
-        }
-    }
+	/**
+	 * @param doorId the id of the door to update
+	 * @param transition the update to make to the door
+	 * 
+	 * @throws IllegalStateException if a transition is not provided
+	 * @throws IllegalArgumentException if the door does not exist
+	 * @throws IllegalTransitionException if the request transition is illegal
+	 */
+	@RequestMapping(method = RequestMethod.PUT, value = "/{doorId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.OK)
+	@Transactional
+	void update(@PathVariable Integer doorId, @RequestBody Door transition) throws IllegalTransitionException {
+		Door door = this.doorRepository.findOne(doorId);
+		Assert.notNull(door);
+		Assert.notNull(transition);
+
+		Door.DoorStatus targetStatus = transition.getStatus();
+		if (Door.DoorStatus.CLOSED == targetStatus) {
+			throw new IllegalTransitionException(door.getGame().getId(), door.getId(), targetStatus);
+		} else if (Door.DoorStatus.OPENED == targetStatus) {
+			this.gameService.open(door);
+		} else if (Door.DoorStatus.SELECTED == targetStatus) {
+			this.gameService.select(door);
+		} else {
+			throw new IllegalStateException();
+		}
+	}
 }

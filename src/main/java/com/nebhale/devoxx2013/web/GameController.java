@@ -16,8 +16,8 @@
 
 package com.nebhale.devoxx2013.web;
 
-import com.nebhale.devoxx2013.domain.Game;
-import com.nebhale.devoxx2013.service.GameService;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceAssembler;
@@ -33,47 +33,71 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import com.nebhale.devoxx2013.domain.Game;
+import com.nebhale.devoxx2013.domain.GameRepository;
+import com.nebhale.devoxx2013.service.GameService;
 
 @RequestMapping("/games")
 @RestController
 final class GameController {
 
-    private final GameService gameService;
+	private final GameRepository gameRepository;
 
-    private final ResourceAssembler<Game, Resource<Game>> resourceAssembler;
+	private final GameService gameService;
 
-    @Autowired
-    GameController(GameService gameService, ResourceAssembler<Game, Resource<Game>> resourceAssembler) {
-        this.gameService = gameService;
-        this.resourceAssembler = resourceAssembler;
-    }
+	private final ResourceAssembler<Game, Resource<Game>> resourceAssembler;
 
-    @RequestMapping(method = RequestMethod.POST, value = "")
-    @Transactional
-    ResponseEntity<Void> create() {
-        Game game = this.gameService.create();
+	@Autowired
+	GameController(GameRepository gameRepository, GameService gameService, ResourceAssembler<Game, Resource<Game>> resourceAssembler) {
+		this.gameRepository = gameRepository;
+		this.gameService = gameService;
+		this.resourceAssembler = resourceAssembler;
+	}
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(linkTo(GameController.class).slash(game).toUri());
+	/**
+	 * Creates a new Game
+	 * 
+	 * @return the new Game
+	 */
+	@RequestMapping(method = RequestMethod.POST, value = "")
+	@Transactional
+	@ResponseStatus(HttpStatus.CREATED)
+	ResponseEntity<Void> create() {
+		Game game = this.gameService.create();
 
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
-    }
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(linkTo(GameController.class).slash(game).toUri());
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{game}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @Transactional(readOnly = true)
-    Resource<Game> read(@PathVariable Game game) {
-        Assert.notNull(game);
-        return this.resourceAssembler.toResource(game);
-    }
+		return new ResponseEntity<>(headers, HttpStatus.CREATED);
+	}
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{game}")
-    @ResponseStatus(HttpStatus.OK)
-    @Transactional
-    void delete(@PathVariable Game game) {
-        Assert.notNull(game);
-        this.gameService.delete(game);
-    }
+	/**
+	 * @param gameId The id of the Game
+	 * 
+	 * @return The Game
+	 * 
+	 * @throws IllegalArgumentException if the Game does not exist
+	 */
+	@RequestMapping(method = RequestMethod.GET, value = "/{gameId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.OK)
+	@Transactional(readOnly = true)
+	Resource<Game> read(@PathVariable Integer gameId) {
+		Game game = this.gameRepository.findOne(gameId);
+		Assert.notNull(game);
+		return this.resourceAssembler.toResource(game);
+	}
 
+	/**
+	 * @param gameId The id of the Game
+	 * 
+	 * @throws IllegalArgumentException if the Game does not exist
+	 */
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{gameId}")
+	@ResponseStatus(HttpStatus.OK)
+	@Transactional
+	void delete(@PathVariable Integer gameId) {
+		Game game = this.gameRepository.findOne(gameId);
+		Assert.notNull(game);
+		this.gameService.delete(game);
+	}
 }
