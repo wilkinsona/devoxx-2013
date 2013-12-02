@@ -52,6 +52,8 @@ final class DoorController {
 	}
 
 	/**
+	 * Get the details of a Door
+	 * 
 	 * @param doorId the id of the door
 	 * 
 	 * @return The door
@@ -68,6 +70,8 @@ final class DoorController {
 	}
 
 	/**
+	 * Change the status of a Door
+	 * 
 	 * @param doorId the id of the door to update
 	 * @param transition the update to make to the door
 	 * 

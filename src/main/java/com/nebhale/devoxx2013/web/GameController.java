@@ -55,7 +55,7 @@ final class GameController {
 	}
 
 	/**
-	 * Creates a new Game
+	 * Create a new Game
 	 * 
 	 * @return the new Game
 	 */
@@ -72,6 +72,8 @@ final class GameController {
 	}
 
 	/**
+	 * Get the details of a Game.
+	 * 
 	 * @param gameId The id of the Game
 	 * 
 	 * @return The Game
@@ -88,6 +90,10 @@ final class GameController {
 	}
 
 	/**
+	 * Delete a Game.
+	 * 
+	 * The Game and all of its Doors are deleted
+	 * 
 	 * @param gameId The id of the Game
 	 * 
 	 * @throws IllegalArgumentException if the Game does not exist
