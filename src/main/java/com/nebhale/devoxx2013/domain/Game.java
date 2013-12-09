@@ -27,38 +27,43 @@ import javax.persistence.Id;
 @Entity
 public final class Game implements Identifiable<Integer> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private volatile Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private volatile Integer id;
 
-    private volatile GameStatus status;
+	private volatile GameStatus status;
 
-    public Game() {
-        this(GameStatus.AWAITING_INITIAL_SELECTION);
-    }
+	public Game() {
+		this(GameStatus.AWAITING_INITIAL_SELECTION);
+	}
 
-    public Game(GameStatus status) {
-        this.status = status;
-    }
+	public Game(GameStatus status) {
+		this.status = status;
+	}
 
-    @JsonIgnore
-    public Integer getId() {
-        return this.id;
-    }
+	@JsonIgnore
+	public Integer getId() {
+		return this.id;
+	}
 
-    public GameStatus getStatus() {
-        return this.status;
-    }
+	/**
+	 * The status of the Game
+	 * 
+	 * @return the status of the Game
+	 */
+	public GameStatus getStatus() {
+		return this.status;
+	}
 
-    public void setStatus(GameStatus status) {
-        this.status = status;
-    }
+	public void setStatus(GameStatus status) {
+		this.status = status;
+	}
 
-    public enum GameStatus {
-        AWAITING_INITIAL_SELECTION,
-        AWAITING_FINAL_SELECTION,
-        LOST,
-        WON
-    }
+	public enum GameStatus {
+		AWAITING_INITIAL_SELECTION,
+		AWAITING_FINAL_SELECTION,
+		LOST,
+		WON
+	}
 
 }

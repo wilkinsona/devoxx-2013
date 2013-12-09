@@ -29,67 +29,77 @@ import javax.persistence.ManyToOne;
 @Entity
 public final class Door implements Identifiable<Integer> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private volatile Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private volatile Integer id;
 
-    private volatile DoorContent content;
+	private volatile DoorContent content;
 
-    @ManyToOne
-    private volatile Game game;
+	@ManyToOne
+	private volatile Game game;
 
-    private volatile DoorStatus status;
+	private volatile DoorStatus status;
 
-    Door() {
-    }
+	Door() {
+	}
 
-    public Door(DoorContent content, Game game) {
-        this.content = content;
-        this.game = game;
-        this.status = DoorStatus.CLOSED;
-    }
+	public Door(DoorContent content, Game game) {
+		this.content = content;
+		this.game = game;
+		this.status = DoorStatus.CLOSED;
+	}
 
-    @JsonIgnore
-    public Integer getId() {
-        return this.id;
-    }
+	@JsonIgnore
+	public Integer getId() {
+		return this.id;
+	}
 
-    @JsonIgnore
-    public DoorContent getContent() {
-        return this.content;
-    }
+	@JsonIgnore
+	public DoorContent getContent() {
+		return this.content;
+	}
 
-    @JsonProperty("content")
-    public DoorContent getContentObfuscated() {
-        if (this.status == DoorStatus.OPENED) {
-            return this.content;
-        }
-        return DoorContent.UNKNOWN;
-    }
+	/**
+	 * The content of the Door
+	 * 
+	 * @return The content of the Door
+	 */
+	@JsonProperty("content")
+	public DoorContent getContentObfuscated() {
+		if (this.status == DoorStatus.OPENED) {
+			return this.content;
+		}
+		return DoorContent.UNKNOWN;
+	}
 
-    @JsonIgnore
-    public Game getGame() {
-        return this.game;
-    }
+	@JsonIgnore
+	public Game getGame() {
+		return this.game;
+	}
 
-    public DoorStatus getStatus() {
-        return this.status;
-    }
+	/**
+	 * The status of the Door
+	 * 
+	 * @return The status of the Door
+	 */
+	public DoorStatus getStatus() {
+		return this.status;
+	}
 
-    public void setStatus(DoorStatus status) {
-        this.status = status;
-    }
+	public void setStatus(DoorStatus status) {
+		this.status = status;
+	}
 
-    public enum DoorContent {
-        BICYCLE,
-        SMALL_FURRY_ANIMAL,
-        UNKNOWN
-    }
+	public enum DoorContent {
+		BICYCLE,
+		SMALL_FURRY_ANIMAL,
+		UNKNOWN
+	}
 
-    public enum DoorStatus {
-        CLOSED,
-        OPENED,
-        SELECTED
-    }
+	public enum DoorStatus {
+		CLOSED,
+		OPENED,
+		SELECTED
+	}
 
 }
