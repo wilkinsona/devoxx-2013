@@ -54,11 +54,11 @@ final class DoorController {
 	/**
 	 * Get the details of a Door
 	 * 
-	 * @param doorId the id of the door
+	 * @param doorId the id of the Door
 	 * 
 	 * @return The door
 	 * 
-	 * @throws IllegalArgumentException if the door does not exist
+	 * @throws IllegalArgumentException if the Door does not exist
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = "/{doorId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
@@ -72,12 +72,12 @@ final class DoorController {
 	/**
 	 * Change the status of a Door
 	 * 
-	 * @param doorId the id of the door to update
-	 * @param transition the update to make to the door
+	 * @param doorId the id of the Door to update
+	 * @param transition the update to make to the Door
 	 * 
 	 * @throws IllegalStateException if a transition is not provided
-	 * @throws IllegalArgumentException if the door does not exist
-	 * @throws IllegalTransitionException if the request transition is illegal
+	 * @throws IllegalArgumentException if the Door does not exist
+	 * @throws IllegalTransitionException if the requested transition is illegal
 	 */
 	@RequestMapping(method = RequestMethod.PUT, value = "/{doorId}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
